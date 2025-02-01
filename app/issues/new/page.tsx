@@ -3,20 +3,26 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FieldValues } from "react-hook-form";
 import { z } from "zod";
+import SimpleMDE from "react-simplemde-editor";
+import "easymde/dist/easymde.min.css";
+import { useState } from "react";
 
 const schema = z.object({
   title: z
     .string()
     .min(1, { message: "Title at least one character" })
     .max(225, { message: "Title can not be more than 255 chars" }),
-  description: z.string().min(10, {
-    message: "Description required and must be 10 characters long.",
-  }),
+  //   description: z.string().min(10, {
+  //     message: "Description required and must be 10 characters long.",
+  //   }),
 });
 
 type FormData = z.infer<typeof schema>;
 
 const NewIssuePage = () => {
+  const [description, setDescription] = useState<string>("");
+  const [descriptionError, setDescriptionError] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
@@ -25,6 +31,13 @@ const NewIssuePage = () => {
 
   //   On Form submit
   const onSubmit = (data: FieldValues) => {
+    if (!description || description.length < 10) {
+      setDescriptionError(true);
+      return;
+    }
+
+    setDescriptionError(false);
+
     console.log(data);
   };
 
@@ -50,27 +63,25 @@ const NewIssuePage = () => {
         </div>
 
         {/* Description */}
-        <div className="mt-3">
+        <div className="mt-5">
           <label
             htmlFor="description"
-            className="block text-zinc-400 mb-2 text-sm"
+            className="block text-zinc-400 text-sm mb-2"
           >
             Description
           </label>
-          <textarea
-            {...register("description")}
-            name="description"
+          <SimpleMDE
             id="description"
-            className="focus:outline-none rounded h-40 w-[60%] resize-none text-black p-3"
-          ></textarea>
-          {errors.description && (
-            <p className="text-red-400 text-xs mt-2">
-              {errors.description.message}
+            style={{ paddingBottom: "1px" }}
+          ></SimpleMDE>
+          {descriptionError && (
+            <p className="text-red-400 text-xs mt-1">
+              Description required and must be 10 characters long.
             </p>
           )}
         </div>
 
-        <button className="bg-blue-500 rounded h-12 px-2 mt-5 w-80 shadow shadow-white active:shadow-none">
+        <button className="bg-blue-500 rounded h-12 px-2 w-80 shadow shadow-white active:shadow-none">
           Create
         </button>
       </form>
