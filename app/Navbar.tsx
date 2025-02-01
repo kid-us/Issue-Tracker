@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import React from "react";
+import { usePathname } from "next/navigation";
 
 interface Links {
   name: string;
@@ -9,9 +12,11 @@ interface Links {
 
 const Navbar = () => {
   const links: Links[] = [
-    { id: 1, name: "Issues", href: "/issues" },
-    { id: 2, name: "Dashboard", href: "/" },
+    { id: 1, name: "Dashboard", href: "/" },
+    { id: 2, name: "Issues", href: "/issues" },
   ];
+
+  const currentPathName = usePathname();
 
   return (
     <nav className="flex justify-between items-center h-16 border-b border-gray-700 mb-8">
@@ -24,7 +29,9 @@ const Navbar = () => {
           <li key={l.id}>
             <Link
               href={l.href}
-              className="text-zinc-400 hover:text-white transition-colors"
+              className={`${
+                currentPathName === l.href ? "text-white" : "text-zinc-400"
+              } hover:text-white transition-colors`}
             >
               {l.name}
             </Link>
