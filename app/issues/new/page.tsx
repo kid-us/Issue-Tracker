@@ -7,6 +7,7 @@ import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const schema = z.object({
   title: z
@@ -27,6 +28,8 @@ interface IssueSchema {
 
 const NewIssuePage = () => {
   const router = useRouter();
+  const [createError, setCreateError] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
@@ -36,14 +39,21 @@ const NewIssuePage = () => {
 
   //   On Form submit
   const onSubmit = async (data: FieldValues) => {
-    await axios.post("/api/issues", data);
-    router.push("/issues");
+    try {
+      await axios.post("/api/issues", data);
+      router.push("/issues");
+    } catch (error) {
+      setCreateError(true);
+    }
   };
 
   return (
     <div>
       <h1 className="text-2xl">Create new Issue</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-5">
+        {createError && (
+          <p className="text-red-400 mb-3">Something went wrong!</p>
+        )}
         {/* Title */}
         <div>
           <label htmlFor="title" className="block text-zinc-400 mb-2 text-sm">
