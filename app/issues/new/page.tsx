@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FieldValues, Controller } from "react-hook-form";
-import { TypeOf, z } from "zod";
+import { z } from "zod";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import axios from "axios";
