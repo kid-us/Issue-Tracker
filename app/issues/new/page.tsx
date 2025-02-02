@@ -2,12 +2,13 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FieldValues, Controller } from "react-hook-form";
-import { z } from "zod";
+import { TypeOf, z } from "zod";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { creatingIssueSchema } from "@/app/validationSchema";
 
 const schema = z.object({
   title: z
@@ -19,12 +20,7 @@ const schema = z.object({
   }),
 });
 
-interface IssueSchema {
-  title: string;
-  description: string;
-}
-
-// type FormData = z.infer<typeof schema>;
+type FormData = z.infer<typeof creatingIssueSchema>;
 
 const NewIssuePage = () => {
   const router = useRouter();
@@ -35,7 +31,7 @@ const NewIssuePage = () => {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<IssueSchema>();
+  } = useForm<FormData>({ resolver: zodResolver(creatingIssueSchema) });
 
   //   On Form submit
   const onSubmit = async (data: FieldValues) => {
@@ -89,7 +85,7 @@ const NewIssuePage = () => {
                 {...field}
               ></SimpleMDE>
               {errors.description && (
-                <p className="text-red-400 text-xs mt-1">
+                <p className="text-red-400 text-xs mb-4">
                   {errors.description.message}
                 </p>
               )}
