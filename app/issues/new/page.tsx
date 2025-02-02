@@ -9,6 +9,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { creatingIssueSchema } from "@/app/validationSchema";
+import ErrorMessage from "@/app/components/ErrorMessage";
 
 const schema = z.object({
   title: z
@@ -62,9 +63,7 @@ const NewIssuePage = () => {
             id="title"
             className="focus:outline-none rounded h-11 w-96 text-black px-3"
           />
-          {errors.title && (
-            <p className="text-red-400 text-xs mt-2">{errors.title.message}</p>
-          )}
+          <ErrorMessage>{errors.title?.message}</ErrorMessage>
         </div>
 
         {/* Description */}
@@ -84,16 +83,12 @@ const NewIssuePage = () => {
                 style={{ paddingBottom: "1px" }}
                 {...field}
               ></SimpleMDE>
-              {errors.description && (
-                <p className="text-red-400 text-xs mb-4">
-                  {errors.description.message}
-                </p>
-              )}
+              <ErrorMessage>{errors.description?.message}</ErrorMessage>
             </div>
           )}
         />
 
-        <button className="bg-blue-500 rounded h-12 px-2 w-80 shadow shadow-white active:shadow-none">
+        <button className="bg-blue-500 rounded h-12 px-2 w-80 shadow shadow-white active:shadow-none mt-5">
           Create
         </button>
       </form>
