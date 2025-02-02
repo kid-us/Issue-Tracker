@@ -1,44 +1,43 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, FieldValues } from "react-hook-form";
+import { useForm, FieldValues, Controller } from "react-hook-form";
 import { z } from "zod";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
-import { useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   title: z
     .string()
     .min(1, { message: "Title at least one character" })
     .max(225, { message: "Title can not be more than 255 chars" }),
-  //   description: z.string().min(10, {
-  //     message: "Description required and must be 10 characters long.",
-  //   }),
+  description: z.string().min(10, {
+    message: "Description required and must be 10 characters long.",
+  }),
 });
 
-type FormData = z.infer<typeof schema>;
+interface IssueSchema {
+  title: string;
+  description: string;
+}
+
+// type FormData = z.infer<typeof schema>;
 
 const NewIssuePage = () => {
-  const [description, setDescription] = useState<string>("");
-  const [descriptionError, setDescriptionError] = useState<boolean>(false);
-
+  const router = useRouter();
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(schema) });
+  } = useForm<IssueSchema>();
 
   //   On Form submit
-  const onSubmit = (data: FieldValues) => {
-    if (!description || description.length < 10) {
-      setDescriptionError(true);
-      return;
-    }
-
-    setDescriptionError(false);
-
-    console.log(data);
+  const onSubmit = async (data: FieldValues) => {
+    await axios.post("/api/issues", data);
+    router.push("/issues");
   };
 
   return (
@@ -63,23 +62,30 @@ const NewIssuePage = () => {
         </div>
 
         {/* Description */}
-        <div className="mt-5">
-          <label
-            htmlFor="description"
-            className="block text-zinc-400 text-sm mb-2"
-          >
-            Description
-          </label>
-          <SimpleMDE
-            id="description"
-            style={{ paddingBottom: "1px" }}
-          ></SimpleMDE>
-          {descriptionError && (
-            <p className="text-red-400 text-xs mt-1">
-              Description required and must be 10 characters long.
-            </p>
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <div className="mt-5">
+              <label
+                htmlFor="description"
+                className="block text-zinc-400 text-sm mb-2"
+              >
+                Description
+              </label>
+              <SimpleMDE
+                id="description"
+                style={{ paddingBottom: "1px" }}
+                {...field}
+              ></SimpleMDE>
+              {errors.description && (
+                <p className="text-red-400 text-xs mt-1">
+                  {errors.description.message}
+                </p>
+              )}
+            </div>
           )}
-        </div>
+        />
 
         <button className="bg-blue-500 rounded h-12 px-2 w-80 shadow shadow-white active:shadow-none">
           Create
